@@ -1,33 +1,41 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react'; // Se instala con npm i @headlessui/react, es la parte de tailwind css cuándo queremos tener elementos más dinámicos, headless nos facilita una serie de componentes bastante interactivos y que se ven muy bien. En este caso lo usamos para crear ese modal.
 import { Fragment } from 'react';
 import { useAppStore } from '../stores/useAppStore';
 import { Recipe } from '../types';
 
 export default function Modal() {
 
-    const modal = useAppStore((state) => state.modal)
-    const closeModal = useAppStore((state) => state.closeModal)
-    const selectedRecipe = useAppStore((state) => state.selectedRecipe)
-    const handleClickFavorite = useAppStore((state) => state.handleClickFavorite)
-    const favoriteExists = useAppStore((state) => state.favoriteExists)
+    const modal = useAppStore((state) => state.modal) // Importamos el state de modal
+
+    const closeModal = useAppStore((state) => state.closeModal) // Importamos esa función
+
+    const selectedRecipe = useAppStore((state) => state.selectedRecipe) // Importamos ese state, ya que ahí es donde se almacena la información de la receta, necesitamos mostrar esa información en el modal.
+
+    const handleClickFavorite = useAppStore((state) => state.handleClickFavorite) // Esta función es para ver si existe o no ese favorito en el state, si ya existe lo eliminamos pero si no existe lo agregamos a favoritos, esa función va a tomar una receta 
+
+    const favoriteExists = useAppStore((state) => state.favoriteExists) // Esta función se va a encargar de averiguar si existe o no la receta en favoritos, de esa forma siempre que presionemos o la agrega o la elimina, debemos hacer dinámico ese botón de Agregar a favoritos para que también muestre eliminar favoritos cuando ya exista en el state. Toma el id de la receta
 
     const renderIngredients = () => {
-        const ingredients : JSX.Element[] = []
-        for(let i = 1; i <= 6; i++) {
-            const ingredient = selectedRecipe[`strIngredient${i}` as keyof Recipe]
-            const measure = selectedRecipe[`strMeasure${i}` as keyof Recipe]
-            if(ingredient && measure) {
-                ingredients.push(
+        const ingredients : JSX.Element[] = [] // Creamos un arreglo llamado ingredients y es algo que queremos mostrar en pantalla, ya que van a ser los ingredientes, react por defecto nos da el type que es JSX.Element, pero como van a ser muchos le colocamos el [], ese type se lo colocamos para que no quede como any.
+        for(let i = 1; i <= 6; i++) { // En nuestro schema, tenemos 6 ingredientes, por lo tanto, iniciamos en 1 y cuándo llegue a 6 queremos que se detenga.
+            const ingredient = selectedRecipe[`strIngredient${i}` as keyof Recipe] // De esa forma accedemos dinámicamente a cada ingrediente. Y como ese ingredient vuelve a ser de tipo any, le colocamos ese Keyof y ese Keyof lo que hace es que va a utilizar cualquiera de esas llaves del objeto o la forma que deinifimos en el type Recipe pero específicamente en el Schema. De esa forma ingredient va a ser string o null.
+
+            const measure = selectedRecipe[`strMeasure${i}` as keyof Recipe] // Hacemos lo mismo con Measure, measure es una propiedad que definimos en ese schema.
+
+            if(ingredient && measure) { // Si tenemos un ingrediente y una cantidad, ejecutamos lo siguiente, de nuevo, porque no todos tienen la misma cantidad de ingredientes.:
+                ingredients.push( // Ese ingredients es un arreglo, así que le colocamos el método push, y usualmente en react no usaríamos push ya que muta el arreglo original, pero este no es un state, este es un arreglo que se está llenando de información
+
+                    // Le asignamos un key a ese li para crear la lista y le colocamos el index actual 
                     <li key={i} className='text-lg font-normal'>
-                        {ingredient} - {measure}
-                    </li>
+                        {ingredient} - {measure} 
+                    </li> // Concatenamos y unimos ese ingrediente y la cantidad
                 )
             }
         }
-        return ingredients
+        return ingredients // Retornamos los ingredientes y ya se va a llenar ese arreglo.
     }
     
-    return (
+    return ( // Este código se sacó de un gist, es el código de un componente modal que se sacó de headlessui
         <>
             <Transition appear show={modal} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -85,8 +93,12 @@ export default function Modal() {
                                 <button
                                     type='button'
                                     className='w-full rounded bg-orange-600 p-3 font-bold uppercase text-white shadow hover:bg-orange-500'
-                                    onClick={() => handleClickFavorite(selectedRecipe)}
-                                >{favoriteExists(selectedRecipe.idDrink) ? 'Eliminar Favorito' : 'Agregar a Favoritos'}</button>
+                                    onClick={() => handleClickFavorite(selectedRecipe)} // Le pasamos selectedRecipe porque ahí se almacenan las recetas
+                                        >{favoriteExists(selectedRecipe.idDrink) // De esa forma si existe esa receta entonces ese botón muestra Eliminar favorito, pero si no existe esa receta se muestra Agregar a favoritos
+                                                ? 'Eliminar favorito'
+                                                : 'Agregar a favoritos'
+                                        }
+                                </button>
                             </div>
                         </Dialog.Panel>
                     </Transition.Child>

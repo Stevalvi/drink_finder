@@ -1,13 +1,13 @@
 import { Fragment } from 'react'
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import { XMarkIcon } from '@heroicons/react/20/solid' // npm i @heroicons/react
 import { Transition } from '@headlessui/react'
 import { useAppStore } from '../stores/useAppStore'
 
 export default function Notification() {
 
-    const notification = useAppStore((state) => state.notification)
-    const hideNotification = useAppStore((state) => state.hideNotification)
+    const notification = useAppStore((state) => state.notification) // Muestra esa notificación
+    const hideNotification = useAppStore((state) => state.hideNotification) // Oculta esa notificación
 
     return (
         <div
@@ -29,9 +29,9 @@ export default function Notification() {
                         <div className="p-4">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">
-                                      {notification.error ? (
+                                      {notification.error ? ( // Si tenemos una notificación de error mostramos el siguiente ícono, ese aria-hidden en true es para hacerlo accesible
                                             <XCircleIcon className='h-6 w-6 text-red-400' aria-hidden="true" />
-                                      ) : (
+                                      ) : ( // Caso contrario, es decir, no es de error mostramos el siguiente ícono
                                             <CheckCircleIcon className='h-6 w-6 text-green-400' aria-hidden="true" />
                                       )}
                                 </div>
@@ -45,7 +45,7 @@ export default function Notification() {
                                     <button
                                         type="button"
                                         className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                        onClick={hideNotification}
+                                        onClick={hideNotification} // Cerramos esa notificación
                                     >
                                         <span className="sr-only">Cerrar</span>
                                         <XMarkIcon className="h-5 w-5" aria-hidden="true" />
